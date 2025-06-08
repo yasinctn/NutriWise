@@ -8,27 +8,22 @@
 import SwiftUI
 
 struct IdealWeightView: View {
-    
-    var goal: String
 
-    @State private var targetWeight = ""
+    @EnvironmentObject var userVM: UserProfileViewModel
+    
+    
     @State private var speed = 1.0
 
-    var animatedBackground: Color {
-        targetWeight.isEmpty ?
-            Color(red: 246/255, green: 248/255, blue: 252/255) : // Boşken gri
-            Color(red: 250/255, green: 237/255, blue: 215/255)   // Doluysa sarımsı
-    }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Burada \(goal.lowercased()) için varsınız!")
+            Text("Burada \(userVM.goal.lowercased()) için varsınız!")
                 .font(.headline)
                 .padding()
 
             Text("İdeal Kilonuz Nedir?")
             
-            AnimatedTextField(placeholder: "kg", text: $targetWeight, keyboardType: .numberPad)
+            AnimatedTextField(placeholder: "kg", text: $userVM.targetWeight, keyboardType: .numberPad)
             
 
             Text("Hedefinize hangi hızda ulaşmak istiyorsunuz?")
@@ -52,12 +47,12 @@ struct IdealWeightView: View {
             NavigationLink("Sonraki") {
                 AuthGatewayView(purpose: .signup)
             }
-            .disabled(targetWeight.isEmpty)
+            .disabled(userVM.targetWeight.isEmpty)
         }
         
         .padding()
     }
 }
 #Preview {
-    IdealWeightView(goal: "")
+    IdealWeightView()
 }

@@ -8,69 +8,109 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @State private var email: String = ""
-    @State private var password: String = ""
     @State private var isPasswordHidden: Bool = true
+
+    @State private var isLoading = false
+    @State private var showAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
+    @State private var showStartButton = false
+
+    @EnvironmentObject var userVM: UserProfileViewModel
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
 
     var body: some View {
-        VStack(spacing: 16) {
-            Spacer()
+        ZStack {
+            VStack(spacing: 16) {
+                Spacer()
 
-            // E-posta Alanı
-            AnimatedTextField(
-                placeholder: "E-posta",
-                text: $email,
-                keyboardType: .emailAddress
-            )
-
-            // Şifre Alanı (özel toggle’lı)
-            ZStack(alignment: .trailing) {
+                // E-posta Alanı
                 AnimatedTextField(
-                    placeholder: "Şifre",
-                    text: $password,
-                    keyboardType: .default,
-                    isSecure: isPasswordHidden
+                    placeholder: "E-posta",
+                    text: $userVM.email,
+                    keyboardType: .emailAddress
                 )
 
-                Button(action: {
-                    isPasswordHidden.toggle()
-                }) {
-                    Image(systemName: isPasswordHidden ? "eye.slash" : "eye")
-                        .foregroundColor(.gray)
-                        .padding(.trailing, 12)
+                // Şifre Alanı
+                ZStack(alignment: .trailing) {
+                    AnimatedTextField(
+                        placeholder: "Şifre",
+                        text: $userVM.password,
+                        keyboardType: .default,
+                        isSecure: isPasswordHidden
+                    )
+
+                    Button(action: {
+                        isPasswordHidden.toggle()
+                    }) {
+                        Image(systemName: isPasswordHidden ? "eye.slash" : "eye")
+                            .foregroundColor(.gray)
+                            .padding(.trailing, 12)
+                    }
                 }
+
+                Spacer()
+
+                // Hesap Oluştur Butonu
+                Button(action: {
+                    isLoading = true
+                    userVM.registerUser() { success in
+                        if success {
+                            alertTitle = "Kayıt Başarılı"
+                            alertMessage = "Kaydınız başarıyla oluşturuldu."
+                            showStartButton = true
+                        } else {
+                            alertTitle = "Hata"
+                            alertMessage = "Kayıt oluşturulamadı. Lütfen tekrar deneyin."
+                            showStartButton = false
+                        }
+                        isLoading = false
+                        showAlert = true
+                    }
+                }) {
+                    Text("Hesabımı Oluştur")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(red: 210/255, green: 218/255, blue: 228/255))
+                        .cornerRadius(23)
+                }
+                .disabled(userVM.email.isEmpty || userVM.password.isEmpty)
+            }
+            .padding()
+
+            // Loading ekranı
+            if isLoading {
+                LoadingView()
+                    .transition(.opacity)
             }
 
-            
-
-            Spacer()
-
-            // Sonraki butonu
-            Button(action: {
-                performRegistration(email: email, password: password)
-            }) {
-                Text("Hesabımı Oluştur")
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color(red: 210/255, green: 218/255, blue: 228/255))
-                    .cornerRadius(23)
+            // Alert gösterimi
+            if showAlert {
+                CustomAlert(
+                    title: alertTitle,
+                    message: alertMessage,
+                    confirmTitle: showStartButton ? "Başla" : "Tamam"
+                ) {
+                    showAlert = false
+                    if showStartButton {
+                        isLoading = true
+                        userVM.loginUser() { loggedIn in
+                            isLoading = false
+                            if loggedIn {
+                                isLoggedIn = true
+                            }
+                        }
+                    }
+                }
+                .transition(.scale)
             }
-            .disabled(email.isEmpty || password.isEmpty)
-            
-            
         }
-        .padding()
-        
+        .animation(.easeInOut, value: isLoading || showAlert)
     }
-    
-    func performRegistration(email: String, password: String) {
-            // giriş işlemi yapılacak
-        }
-    
 }
+
 
 #Preview {
     RegisterView()

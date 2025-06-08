@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct NameInputView: View {
-    
-    @State private var name = ""
-    
+    @EnvironmentObject var userVM: UserProfileViewModel
     
     var body: some View {
         VStack {
@@ -21,14 +19,14 @@ struct NameInputView: View {
                 .multilineTextAlignment(.center)
                 .padding()
             
-            AnimatedTextField(placeholder: "Ad", text: $name)
+            AnimatedTextField(placeholder: "Ad", text: $userVM.name)
             
             Spacer()
             
             NavigationLink("İleri") {
-                GenderAgeHeightView(name: name)
+                GenderAgeHeightView()
             }
-            .disabled(name.isEmpty)
+            .disabled(userVM.name.isEmpty)
             .padding()
         }
         .padding()

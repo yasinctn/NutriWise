@@ -7,9 +7,11 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var email: String = ""
-    @State private var password: String = ""
+    @EnvironmentObject var userVM: UserProfileViewModel
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
     @State private var isPasswordHidden: Bool = true
+    @State private var isLoading = false
+    @State private var showingErrorAlert = false
 
     var body: some View {
         VStack(spacing: 16) {
@@ -18,15 +20,15 @@ struct LoginView: View {
             // E-posta Alanı
             AnimatedTextField(
                 placeholder: "E-posta",
-                text: $email,
+                text: $userVM.email,
                 keyboardType: .emailAddress
             )
 
-            // Şifre Alanı (özel toggle’lı)
+            // Şifre Alanı
             ZStack(alignment: .trailing) {
                 AnimatedTextField(
                     placeholder: "Şifre",
-                    text: $password,
+                    text: $userVM.password,
                     keyboardType: .default,
                     isSecure: isPasswordHidden
                 )
@@ -40,35 +42,48 @@ struct LoginView: View {
                 }
             }
 
-            // Şifrenizi mi unuttunuz?
-            Button(action: {
-                // Şifre sıfırlama ekranı
-            }) {
-                Text("Şifrenizi mi unuttunuz?")
-                    .font(.subheadline)
-                    .underline()
-                    .foregroundColor(.black)
+            // Şifremi unuttum
+            Button("Şifrenizi mi unuttunuz?") {
+                // navigasyon yapılabilir
             }
+            .font(.subheadline)
+            .underline()
+            .foregroundColor(.black)
             .padding(.top, 8)
 
             Spacer()
 
-            // Sonraki butonu
-            Button(action: {
-                // Giriş işlemi
-            }) {
-                Text("Sonraki")
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color(red: 210/255, green: 218/255, blue: 228/255))
-                    .cornerRadius(23)
+            if isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                    .scaleEffect(1.5)
+            } else {
+                Button("Sonraki") {
+                    isLoading = true
+                    userVM.loginUser() { success in
+                        isLoading = false
+                        if success {
+                            isLoggedIn = true
+                        } else {
+                            showingErrorAlert = true
+                        }
+                    }
+                }
+                .disabled(userVM.email.isEmpty || userVM.password.isEmpty)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(red: 210/255, green: 218/255, blue: 228/255))
+                .cornerRadius(23)
             }
-            .disabled(email.isEmpty || password.isEmpty)
         }
         .padding()
-        
+        .alert("Giriş başarısız", isPresented: $showingErrorAlert) {
+            Button("Tamam", role: .cancel) { }
+        } message: {
+            Text("E-posta ya da şifre hatalı. Lütfen tekrar deneyin.")
+        }
     }
 }
 

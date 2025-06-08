@@ -8,34 +8,23 @@
 import SwiftUI
 
 struct GoalSelectionView: View {
-    var name: String
-    var gender: String
-    var age: String
-    var height: String
-
+    @EnvironmentObject var userVM: UserProfileViewModel
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Merhaba \(name)!")
+            Text("Merhaba \(userVM.name)!")
                 .font(.title)
             Text("Burada ne yapıyorsunuz?")
 
             
-            GoalButton(label: "Kilo vermek") {
-                IdealWeightView(goal: "Kilo vermek")
-            }
+            GoalButton(goal: "Kilo vermek")
            
             
-            GoalButton(label: "Kas kazanmak ve yağ kaybetmek") {
-                IdealWeightView(goal: "Kas kazanmak ve yağ kaybetmek")
-            }
+            GoalButton(goal: "Kas kazanmak ve yağ kaybetmek")
             
-            GoalButton(label: "Kas kazanmak, yağ kaybetmek ikinci planda") {
-                IdealWeightView(goal: "Kas kazanmak, yağ kaybetmek ikinci planda")
-            }
+            GoalButton(goal: "Kas kazanmak, yağ kaybetmek ikinci planda")
             
-            GoalButton(label: "Kilo vermeden daha sağlıklı beslenmek") {
-                IdealWeightView(goal: "Kilo vermeden daha sağlıklı beslenmek")
-            }
+            GoalButton(goal: "Kilo vermeden daha sağlıklı beslenmek")
             
           
             Spacer()
@@ -45,20 +34,20 @@ struct GoalSelectionView: View {
 }
 
 #Preview {
-    GoalSelectionView(name: "", gender: "", age: "", height: "")
+    GoalSelectionView()
 }
 
 
 // MARK: - Goal Button
 
-struct GoalButton<Destination: View>: View {
-    var label: String
-    let destination: () -> Destination
+struct GoalButton: View {
+    @EnvironmentObject var userVM: UserProfileViewModel
+    var goal: String
 
     var body: some View {
-        NavigationLink(destination: destination()) {
+        NavigationLink(destination: IdealWeightView()) {
             HStack {
-                Text(label)
+                Text(goal)
                     .fontWeight(.medium)
                     .padding(8)
             }
@@ -67,7 +56,11 @@ struct GoalButton<Destination: View>: View {
             .background(Color(red: 246/255, green: 248/255, blue: 252/255))
             .foregroundColor(Color.black)
             .cornerRadius(12)
-            Spacer()
         }
+        .simultaneousGesture(TapGesture().onEnded {
+            userVM.goal = goal // 💡 Navigation öncesi hedef kaydı
+        })
     }
 }
+
+

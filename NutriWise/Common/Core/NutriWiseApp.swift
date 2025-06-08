@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct NutriWiseApp: App {
+    
+    @StateObject private var userVM = UserProfileViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environmentObject(userVM)
         }
     }
 }

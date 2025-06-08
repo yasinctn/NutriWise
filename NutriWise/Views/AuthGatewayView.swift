@@ -25,39 +25,6 @@ struct AuthGatewayView: View {
         case .signup: return "Ayarlarınızı kaydetmek için hesabınızı\nkaydedin."
         }
     }
-// MARK: - Illustration
-    var illustration: some View {
-        switch purpose {
-        case .login:
-            return AnyView(
-                ZStack {
-                    Image(systemName: "book.closed.fill")
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(.black)
-                        .offset(x: -10)
-                    Image(systemName: "circle.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.orange)
-                        .offset(x: 20, y: 20)
-                }
-            )
-        case .signup:
-            return AnyView(
-                HStack(spacing: 16) {
-                    Image(systemName: "leaf.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.green)
-                    Image(systemName: "scalemass.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.blue)
-                }
-            )
-        }
-    }
 
     var body: some View {
         VStack(spacing: 28) {
@@ -84,9 +51,21 @@ struct AuthGatewayView: View {
                 SignInButton(label: "Google ile devam et", color: Color(.systemGray5), textColor: .black, icon: "g.circle.fill") {
                     LoginView()
                 }
-                SignInButton(label: "E-posta ile devam et", color: Color(red: 246/255, green: 248/255, blue: 252/255), icon: "envelope.fill") {
-                    LoginView()
+                
+                switch purpose {
+                case .login:
+                    SignInButton(label: "E-posta ile devam et", color: Color(red: 246/255, green: 248/255, blue: 252/255), icon: "envelope.fill") {
+                       
+                        LoginView()
+                    }
+                case .signup:
+                    SignInButton(label: "E-posta ile devam et", color: Color(red: 246/255, green: 248/255, blue: 252/255), icon: "envelope.fill") {
+                       
+                        RegisterView()
+                    }
                 }
+                
+                
             }
             .padding(.horizontal)
 
@@ -100,6 +79,42 @@ struct AuthGatewayView: View {
         }
         .padding()
     }
+    
+    // MARK: - Illustration
+        var illustration: some View {
+            switch purpose {
+            case .login:
+                return AnyView(
+                    ZStack {
+                        Image(systemName: "book.closed.fill")
+                            .resizable()
+                            .frame(width: 60, height: 60)
+                            .foregroundColor(.black)
+                            .offset(x: -10)
+                        Image(systemName: "circle.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.orange)
+                            .offset(x: 20, y: 20)
+                    }
+                )
+            case .signup:
+                return AnyView(
+                    HStack(spacing: 16) {
+                        Image(systemName: "leaf.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.green)
+                        Image(systemName: "scalemass.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.blue)
+                    }
+                )
+            }
+        }
+
+    
 }
 
 

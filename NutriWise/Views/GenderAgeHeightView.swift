@@ -8,46 +8,42 @@
 import SwiftUI
 
 struct GenderAgeHeightView: View {
-    var name: String
-
-    @State private var gender = ""
-    @State private var age = ""
-    @State private var height = ""
-    @State private var weight = ""
-
+    
+    @EnvironmentObject var userVM: UserProfileViewModel
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Cinsiyetiniz nedir?")
                 .font(.headline)
 
             HStack {
-                GenderButton(label: "Erkek", selected: $gender)
-                GenderButton(label: "Kadın", selected: $gender)
-                GenderButton(label: "Non-binary", selected: $gender)
+                GenderButton(label: "Erkek", selected: $userVM.gender)
+                GenderButton(label: "Kadın", selected: $userVM.gender)
+                GenderButton(label: "Non-binary", selected: $userVM.gender)
             }
             Text("Kaç yaşındasınız?")
             AnimatedTextField(
-                text: $age,
+                text: $userVM.age,
                 keyboardType: .numberPad
             )
             Text("Boyunuz nedir?")
             AnimatedTextField(
                 placeholder: "cm",
-                text: $height,
+                text: $userVM.height,
                 keyboardType: .numberPad
             )
             Text("Şu anki kilonuz?")
             AnimatedTextField(
                 placeholder: "kg",
-                text:$weight,
+                text:$userVM.weight,
                 keyboardType: .numberPad
             )
             Spacer()
 
             NavigationLink("İleri") {
-                GoalSelectionView(name: name, gender: gender, age: age, height: height)
+                GoalSelectionView()
             }
-            .disabled(gender.isEmpty || age.isEmpty || height.isEmpty)
+            .disabled(userVM.gender.isEmpty || userVM.age.isEmpty || userVM.height.isEmpty)
         }
         .padding()
         
@@ -74,5 +70,5 @@ struct GenderButton: View {
     }
 }
 #Preview{
-    GenderAgeHeightView(name: "Yasin")
+    GenderAgeHeightView()
 }
