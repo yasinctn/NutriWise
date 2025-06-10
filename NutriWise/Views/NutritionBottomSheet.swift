@@ -13,6 +13,7 @@ struct NutritionBottomSheet: View {
     let predictedInfo: NutritionInfo
     let onAdd: () -> Void
     let onDismiss: () -> Void
+    @Binding var isSending: Bool
 
     var body: some View {
         VStack(spacing: 20) {
@@ -35,18 +36,23 @@ struct NutritionBottomSheet: View {
 
             Spacer()
 
-            Button(action: {
-                onAdd()
-                onDismiss()
-            }) {
-                Text("Ekle")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+            if isSending {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding(.bottom)
+            } else {
+                Button(action: {
+                    onAdd()
+                }) {
+                    Text("Ekle")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                .padding(.bottom)
             }
-            .padding(.bottom)
         }
         .padding()
     }

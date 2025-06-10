@@ -14,7 +14,9 @@ import UIKit
 class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     var userId: Int?
     var mealType: String?
-    
+    @Published var isSendingToBackend = false
+    @Published var showSuccessToast = false
+
     let session = AVCaptureSession()
     private let output = AVCapturePhotoOutput()
     private let queue = DispatchQueue(label: "camera.queue")
@@ -98,9 +100,9 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     
     
     func sendToBackend(userId: Int, mealType: String) {
-        isLoadingNutrition = true
+        isSendingToBackend = true
         errorMessage = nil
-        
+
         MealService.shared.recognizeMeal(
             userId: userId,
             mealType: mealType,
@@ -108,18 +110,19 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             quantity: quantity
         ) { result in
             DispatchQueue.main.async {
-                self.isLoadingNutrition = false
+                self.isSendingToBackend = false
                 switch result {
                 case .success(let info):
-                    print(info)
                     self.nutritionInfo = info
-                    self.showNutritionPopup = true
+                    self.showNutritionPopup = false
+                    self.showSuccessToast = true
                 case .failure(let error):
                     self.errorMessage = "Sunucu hatası: \(error.localizedDescription)"
                 }
             }
         }
     }
+
     
     
 }

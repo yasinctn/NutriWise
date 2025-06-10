@@ -17,16 +17,23 @@ class MealViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String? = nil
     
-    let userId = 1 // İleride @AppStorage("userId") ile değiştirilecek
-
-    func meals(for type: String) -> [Food] {
+    @AppStorage("userId") var userId: Int = 5
+    
+    func getFoods(for type: String) -> [Food] {
         meals.first(where: {
             let normalizedType = $0.mealType?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
             return normalizedType.contains(type.lowercased())
         })?.foods ?? []
     }
-
-
+    
+    func getMealCalories(for mealType: String) -> Int {
+        meals.first(where: {
+            let normalizedType = $0.mealType?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
+            return normalizedType.contains(mealType.lowercased())
+        })?.totalMealCalories ?? 0
+    }
+    
+    
     
     func getAllFoodLabels() -> [String] {
         do {
@@ -47,24 +54,24 @@ class MealViewModel: ObservableObject {
     func fetchMealsForSelectedDate() async {
         isLoading = true
         errorMessage = nil
-
+        
         do {
             let response = try await MealService.shared.fetchMeals(userId: userId, date: selectedDate)
             meals = response.meals ?? []
-            totalCaloriesForSelectedDate = response.totalCaloriesToday ?? 0
+            totalCaloriesForSelectedDate = response.totalCalories ?? 0
         } catch {
             errorMessage = "Veriler alınırken bir hata oluştu: \(error.localizedDescription)"
         }
-
+        
         isLoading = false
     }
-
-
+    
+    
     func goToNextDay() {
         selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
         Task { await fetchMealsForSelectedDate() }
     }
-
+    
     func goToPreviousDay() {
         selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
         Task { await fetchMealsForSelectedDate() }

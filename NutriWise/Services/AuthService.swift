@@ -21,30 +21,32 @@ class AuthService {
             .response { response in
                 switch response.result {
                 case .success:
-                    print("✅ Register successful with status code: \(response.response?.statusCode ?? 0)")
+                    print("Register successful with status code: \(response.response?.statusCode ?? 0)")
                     completion(.success(()))
                 case .failure(let error):
-                    print("❌ Register failed: \(error)")
+                    print("Register failed: \(error)")
                     completion(.failure(error))
                 }
             }
     }
 
     // MARK: - Login
-    func login(request: LoginRequest, completion: @escaping (Result<Void, Error>) -> Void) {
+    func login(request: LoginRequest, completion: @escaping (Result<Int, Error>) -> Void) {
         let url = "\(baseURL)/api/user/login"
-        
+
         AF.request(url, method: .post, parameters: request, encoder: JSONParameterEncoder.default)
             .validate(statusCode: 200..<300)
-            .response { response in
+            .responseDecodable(of: LoginResponse.self) { response in
                 switch response.result {
-                case .success:
-                    print("✅ Login successful with status code: \(response.response?.statusCode ?? 0)")
-                    completion(.success(()))
+                case .success(let loginResponse):
+                    print("Giriş başarılı. Kullanıcı ID: \(loginResponse.userId)")
+                    completion(.success(loginResponse.userId))
                 case .failure(let error):
-                    print("❌ Login failed: \(error)")
+                    print("Giriş başarısız: \(error.localizedDescription)")
                     completion(.failure(error))
                 }
             }
     }
+
+
 }

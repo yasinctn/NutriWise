@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+struct RecognizeResponse: Decodable {
+    let message: String
+    let food: NutritionInfo
+}

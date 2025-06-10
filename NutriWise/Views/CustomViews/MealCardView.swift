@@ -11,10 +11,7 @@ struct MealCardView: View {
     let title: String
     let meals: [Food] // Güncel tip
     let goal: Int
-
-    var totalCalories: Int {
-        meals.map(\.calories!).reduce(0, +)
-    }
+    var totalMealCalories: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -24,7 +21,7 @@ struct MealCardView: View {
 
                 Spacer()
 
-                Text("\(totalCalories) / \(goal) kcal")
+                Text("\(totalMealCalories) / \(goal) kcal")
                     .font(.subheadline)
                     .foregroundColor(.gray)
 
@@ -46,7 +43,7 @@ struct MealCardView: View {
                         Text(food.name ?? "boş")
                             .font(.body)
                         Spacer()
-                        Text("\(food.calories) kcal")
+                        Text("\(food.calories ?? 0) kcal")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }

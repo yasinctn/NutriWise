@@ -33,10 +33,10 @@ struct DashboardView: View {
                     
                     ScrollView {
                         VStack(spacing: 16) {
-                            MealCardView(title: "Kahvaltı", meals: mealVM.meals(for: "Kahvaltı"), goal: 827)
-                            MealCardView(title: "Öğle yemeği", meals: mealVM.meals(for: "Öğle"), goal: 827)
-                            MealCardView(title: "Akşam yemeği", meals: mealVM.meals(for: "Akşam"), goal: 827)
-                            MealCardView(title: "Atıştırmalık", meals: mealVM.meals(for: "Atıştırmalık"), goal: 275)
+                            MealCardView(title: "Kahvaltı", meals: mealVM.getFoods(for: "Kahvaltı"), goal: 827, totalMealCalories: mealVM.getMealCalories(for: "Kahvaltı"))
+                            MealCardView(title: "Öğle yemeği", meals: mealVM.getFoods(for: "Öğle"), goal: 827, totalMealCalories: mealVM.getMealCalories(for: "Öğle yemeği"))
+                            MealCardView(title: "Akşam yemeği", meals: mealVM.getFoods(for: "Akşam"), goal: 827, totalMealCalories: mealVM.getMealCalories(for: "Akşam yemeği"))
+                            MealCardView(title: "Atıştırmalık", meals: mealVM.getFoods(for: "Atıştırmalık"), goal: 275, totalMealCalories: mealVM.getMealCalories(for: "Atıştırmalık"))
                         }
                         .padding(.horizontal)
                     }

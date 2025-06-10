@@ -12,28 +12,43 @@ class MealService {
     static let shared = MealService()
     private let baseURL = "https://nutrionapp.up.railway.app"
 
-    
     func fetchMeals(userId: Int, date: Date) async throws -> DailyMealResponse {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
-        let dateString = formatter.string(from: date)
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            let dateString = formatter.string(from: date)
 
-        guard let encodedDate = dateString.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            throw URLError(.badURL)
+            guard let encodedDate = dateString.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+                throw URLError(.badURL) // Hata fırlatıyoruz
+            }
+
+            let urlString = "\(baseURL)/api/Meal/daily/\(userId)/\(encodedDate)"
+            guard let url = URL(string: urlString) else {
+                throw URLError(.badURL) // Hata fırlatıyoruz
+            }
+
+            return try await withCheckedThrowingContinuation { continuation in
+                AF.request(url)
+                    .validate()
+                    .responseData { response in
+                        switch response.result {
+                        case .success(let data):
+                            if let jsonString = String(data: data, encoding: .utf8) {
+                                print("Gelen JSON string:\n\(jsonString)")
+                            }
+                            do {
+                                let decoded = try JSONDecoder().decode(DailyMealResponse.self, from: data)
+                                continuation.resume(returning: decoded) 
+                            } catch {
+                                print("Decode hatası:", error.localizedDescription)
+                                continuation.resume(throwing: error)
+                            }
+                        case .failure(let error):
+                            print("Network hatası:", error.localizedDescription)
+                            continuation.resume(throwing: error)
+                        }
+                    }
+            }
         }
-
-        let urlString = "\(baseURL)/api/Meal/daily/\(userId)/\(encodedDate)"
-        guard let url = URL(string: urlString) else {
-            throw URLError(.badURL)
-        }
-
-        let response = try await AF.request(url)
-            .validate()
-            .serializingDecodable(DailyMealResponse.self)
-            .value
-
-        return response
-    }
 
 
     func recognizeMeal(userId: Int, mealType: String, foodName: String, quantity: Int, completion: @escaping (Result<NutritionInfo, Error>) -> Void) {

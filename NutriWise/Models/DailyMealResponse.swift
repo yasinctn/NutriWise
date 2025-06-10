@@ -9,8 +9,9 @@ import Foundation
 
 struct DailyMealResponse: Codable {
     let meals: [Meal]?
-    let totalCaloriesToday: Int?
+    let totalCalories: Int?
 }
+
 
 struct Meal: Codable {
     let mealType: String?
@@ -19,12 +20,17 @@ struct Meal: Codable {
 }
 
 
-struct Food: Codable, Identifiable {
-    var id = UUID()
+struct Food: Codable, Identifiable, Hashable {
+    var id = UUID() // ← decode işlemi dışı
+    
     let name: String?
     let calories: Int?
     let protein: Int?
     let fat: Int?
     let carbs: Int?
     let quantity: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case name, calories, protein, fat, carbs, quantity
+    }
 }

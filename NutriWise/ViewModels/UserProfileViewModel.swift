@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class UserProfileViewModel: ObservableObject {
     @Published var name = ""
@@ -19,7 +20,10 @@ class UserProfileViewModel: ObservableObject {
 
     @Published var email = ""
     @Published var password = ""
-
+    
+    @AppStorage("userId") var userId: Int = 0
+    
+    
     // MARK: - Register
     func registerUser(completion: @escaping (Bool) -> Void) {
         guard let ageInt = Int(age),
@@ -57,13 +61,13 @@ class UserProfileViewModel: ObservableObject {
 
     // MARK: - Login
     func loginUser(completion: @escaping (Bool) -> Void) {
-
         let request = LoginRequest(email: email, password: password)
 
         AuthService.shared.login(request: request) { result in
             DispatchQueue.main.async {
                 switch result {
-                case .success:
+                case .success(let id):
+                    self.userId = id
                     completion(true)
                 case .failure(let error):
                     print("Login failed: \(error.localizedDescription)")
@@ -72,4 +76,5 @@ class UserProfileViewModel: ObservableObject {
             }
         }
     }
+
 }

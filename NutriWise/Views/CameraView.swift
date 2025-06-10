@@ -11,7 +11,7 @@ import AVFoundation
 struct CameraView: View {
     
     var mealType: String
-    var userId: Int = 1
+    var userId: Int
     
     @StateObject private var cameraVM = CameraViewModel()
     @Environment(\.dismiss) private var dismiss
@@ -65,13 +65,18 @@ struct CameraView: View {
                     },
                     onDismiss: {
                         cameraVM.showNutritionPopup = false
-                    }
+                    },
+                    isSending: $cameraVM.isSendingToBackend
                 )
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
             }
         }
-
+        .alert("Kayıt başarıyla eklendi", isPresented: $cameraVM.showSuccessToast) {
+            Button("Tamam") {
+                dismiss()
+            }
+        }
         .onAppear {
             cameraVM.userId = userId
             cameraVM.mealType = mealType

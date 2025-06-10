@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MealCaptureScreen: View {
     var mealType: String
-    var userId: Int = 1
+    @AppStorage("userId") var userId: Int = 0
     
     @State private var selectedTab: CaptureTab = .search
     
@@ -31,7 +31,7 @@ struct MealCaptureScreen: View {
             case .camera:
                 CameraView(mealType: mealType, userId: userId)
             case .myFoods:
-                MyFoodsView(mealType: mealType) // örnek boş bir view
+                MyFoodsView(mealType: mealType) 
             }
         }
         .navigationTitle(mealType)
