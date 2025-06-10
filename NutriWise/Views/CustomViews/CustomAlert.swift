@@ -15,7 +15,7 @@ struct CustomAlert: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.3).ignoresSafeArea()
+            //Color.black.opacity(0.3).ignoresSafeArea()
 
             VStack(spacing: 16) {
                 Text(title)
@@ -24,6 +24,7 @@ struct CustomAlert: View {
                 Text(message)
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
+                    .foregroundStyle(Color.primary)
 
                 Button(confirmTitle) {
                     onConfirm()
@@ -31,12 +32,12 @@ struct CustomAlert: View {
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(Color.blue)
-                .foregroundColor(.white)
+                .foregroundColor(.secondary)
                 .cornerRadius(10)
             }
             .padding()
             .frame(maxWidth: 300)
-            .background(Color.white)
+            .background(Color.secondary)
             .cornerRadius(16)
             .shadow(radius: 10)
         }

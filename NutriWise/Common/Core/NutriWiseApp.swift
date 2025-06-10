@@ -11,10 +11,14 @@ import SwiftUI
 struct NutriWiseApp: App {
     
     @StateObject private var userVM = UserProfileViewModel()
+    @StateObject private var mealVM = MealViewModel()
+    @StateObject private var cameraVM = CameraViewModel()
     
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environmentObject(cameraVM)
+                .environmentObject(mealVM)
                 .environmentObject(userVM)
         }
     }
