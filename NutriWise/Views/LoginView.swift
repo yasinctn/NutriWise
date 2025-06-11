@@ -71,11 +71,17 @@ struct LoginView: View {
                 }
                 .disabled(userVM.email.isEmpty || userVM.password.isEmpty)
                 .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color(red: 210/255, green: 218/255, blue: 228/255))
-                .cornerRadius(23)
+                .frame(maxWidth: .infinity)
+                .background(
+                    (userVM.email.isEmpty || userVM.password.isEmpty)
+                    ? Color(red: 210/255, green: 218/255, blue: 228/255)
+                    : Color(.systemIndigo)
+                )
+                .foregroundColor(.white)
+                .clipShape(Capsule())
+                .padding()
+
             }
         }
         .padding()
@@ -89,4 +95,5 @@ struct LoginView: View {
 
 #Preview {
     LoginView()
+        .environmentObject(UserProfileViewModel())
 }

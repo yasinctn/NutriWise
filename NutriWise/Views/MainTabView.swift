@@ -14,16 +14,16 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Ana Sayfa", systemImage: "house")
                 }
-
-            //AddMealView()
-            //.tabItem {
-            //    Label("Öğün Ekle", systemImage: "plus.circle")
-            //}
-
+            
+            CoachView()
+                .tabItem {
+                    Label("Koç", systemImage: "figure.walk.circle")
+                }
+            
             ProfileView()
-            .tabItem {
-                Label("Profil", systemImage: "person.crop.circle")
-            }
+                .tabItem {
+                    Label("Profil", systemImage: "person.crop.circle")
+                }
         }
     }
 }

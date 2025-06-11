@@ -73,8 +73,13 @@ struct RegisterView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color(red: 210/255, green: 218/255, blue: 228/255))
-                        .cornerRadius(23)
+                        .background(
+                            (userVM.email.isEmpty || userVM.password.isEmpty)
+                            ? Color(red: 210/255, green: 218/255, blue: 228/255)
+                            : Color(.systemIndigo)
+                        )
+                        .clipShape(Capsule())
+                        .padding()
                 }
                 .disabled(userVM.email.isEmpty || userVM.password.isEmpty)
             }
@@ -114,4 +119,5 @@ struct RegisterView: View {
 
 #Preview {
     RegisterView()
+        .environmentObject(UserProfileViewModel())
 }
