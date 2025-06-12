@@ -55,28 +55,29 @@ struct CameraView: View {
                 )
             }
         }.sheet(isPresented: $cameraVM.showNutritionPopup) {
-            if let info = cameraVM.nutritionInfo {
-                NutritionBottomSheet(
-                    foodName: cameraVM.predictedLabel ?? "Bilinmeyen",
-                    quantity: $cameraVM.quantity,
-                    predictedInfo: info,
-                    onAdd: {
-                        cameraVM.sendToBackend(userId: userId, mealType: mealType)
-                    },
-                    onDismiss: {
-                        cameraVM.showNutritionPopup = false
-                    },
-                    isSending: $cameraVM.isSendingToBackend
-                )
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
-            }
+            NutritionBottomSheet(
+                foodName: cameraVM.predictedLabel ?? "Bilinmeyen",
+                quantity: $cameraVM.quantity,
+                predictedInfo: cameraVM.nutritionInfo ?? NutritionInfo(foodName: "am", calories: 31, protein: 31, carbs: 31, fat: 31),
+                isLoading: cameraVM.isLoadingNutrition,
+                onAdd: {
+                    print("📤 sendToBackend çağrılıyor")
+                    cameraVM.sendToBackend(userId: userId, mealType: mealType)
+                },
+                onDismiss: {
+                    cameraVM.showNutritionPopup = false
+                },
+                isSending: $cameraVM.isSendingToBackend
+            )
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
         }
-        .alert("Kayıt başarıyla eklendi", isPresented: $cameraVM.showSuccessToast) {
+        .alert(cameraVM.errorMessage ?? "bir hata var", isPresented: $cameraVM.showAlertMessage) {
             Button("Tamam") {
                 dismiss()
             }
         }
+        
         .onAppear {
             cameraVM.userId = userId
             cameraVM.mealType = mealType

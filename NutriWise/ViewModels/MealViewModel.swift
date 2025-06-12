@@ -11,7 +11,12 @@ import CoreML
 @MainActor
 class MealViewModel: ObservableObject {
     
+    @Published var totalGoal: Int = 2750
+    
     @Published var meals: [Meal] = []
+    @Published var totalProteinToday: Double = 0
+    @Published var totalCarbsToday: Double = 0
+    @Published var totalFatToday: Double = 0
     @Published var totalCaloriesForSelectedDate: Int = 0
     @Published var selectedDate: Date = Date()
     @Published var isLoading = false
@@ -59,6 +64,10 @@ class MealViewModel: ObservableObject {
             let response = try await MealService.shared.fetchMeals(userId: userId, date: selectedDate)
             meals = response.meals ?? []
             totalCaloriesForSelectedDate = response.totalCalories ?? 0
+            totalProteinToday = response.totalProtein ?? 0
+            totalCarbsToday = response.totalCarbs ?? 0
+            totalFatToday = response.totalFat ?? 0
+
         } catch {
             errorMessage = "Veriler alınırken bir hata oluştu: \(error.localizedDescription)"
         }
@@ -76,4 +85,18 @@ class MealViewModel: ObservableObject {
         selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
         Task { await fetchMealsForSelectedDate() }
     }
+    
+    
+
+    func fetchTotalGoalFromServer() async {
+        do {
+            let difference = try await MealService.shared.fetchCalorieDifference(userId: userId)
+            // örnek olarak: hedef 2750, fark -500 ise tüketilen = 2250 => totalGoal = 2750
+            // ancak doğrudan ihtiyaç duyulan hedef bu farkla güncellenebilir
+            totalGoal = max(totalCaloriesForSelectedDate + abs(difference), 0)
+        } catch {
+            print("❌ Calorie difference çekilemedi: \(error.localizedDescription)")
+        }
+    }
+
 }

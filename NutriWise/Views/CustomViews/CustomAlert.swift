@@ -15,32 +15,36 @@ struct CustomAlert: View {
 
     var body: some View {
         ZStack {
-            //Color.black.opacity(0.3).ignoresSafeArea()
+            Color.black.opacity(0.4) // Arka plan overlay
+                .ignoresSafeArea()
 
             VStack(spacing: 16) {
                 Text(title)
                     .font(.headline)
+                    .foregroundColor(.primary)
 
                 Text(message)
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(Color.primary)
+                    .foregroundColor(.secondary)
 
                 Button(confirmTitle) {
                     onConfirm()
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .foregroundColor(.secondary)
+                .background(Color.accentColor)
+                .foregroundColor(.white)
                 .cornerRadius(10)
             }
             .padding()
             .frame(maxWidth: 300)
-            .background(Color.secondary)
+            .background(Color(.systemBackground))
             .cornerRadius(16)
-            .shadow(radius: 10)
+            .shadow(color: Color.black.opacity(0.2), radius: 10)
+            .padding(.horizontal)
         }
     }
 }
+
 

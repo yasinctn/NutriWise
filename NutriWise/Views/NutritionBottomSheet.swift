@@ -10,7 +10,8 @@ import SwiftUI
 struct NutritionBottomSheet: View {
     let foodName: String
     @Binding var quantity: Int
-    let predictedInfo: NutritionInfo
+    let predictedInfo: NutritionInfo?
+    let isLoading: Bool
     let onAdd: () -> Void
     let onDismiss: () -> Void
     @Binding var isSending: Bool
@@ -24,35 +25,44 @@ struct NutritionBottomSheet: View {
 
             Stepper("Miktar: \(quantity)", value: $quantity, in: 1...10)
 
-            HStack(spacing: 24) {
-                nutritionItem(title: "Kalori", value: "\(predictedInfo.calories ?? 0) kcal")
-                nutritionItem(title: "Protein", value: "\(predictedInfo.protein ?? 0.0) g")
-            }
+            if isLoading {
+                ProgressView("Besin bilgileri yükleniyor...")
+            } else if let info = predictedInfo {
+                HStack(spacing: 24) {
+                    nutritionItem(title: "Kalori", value: "\(info.calories ?? 0) kcal")
+                    nutritionItem(title: "Protein", value: "\(info.protein ?? 0.0) g")
+                }
 
-            HStack(spacing: 24) {
-                nutritionItem(title: "Karbonhidrat", value: "\(predictedInfo.carbs ?? 0.0) g")
-                nutritionItem(title: "Yağ", value: "\(predictedInfo.fat ?? 0.0) g")
+                HStack(spacing: 24) {
+                    nutritionItem(title: "Karbonhidrat", value: "\(info.carbs ?? 0.0) g")
+                    nutritionItem(title: "Yağ", value: "\(info.fat ?? 0.0) g")
+                }
+            } else {
+                Text("❗Besin bilgisi bulunamadı.")
+                    .foregroundColor(.red)
+                    .font(.caption)
             }
 
             Spacer()
 
             if isSending {
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .padding(.bottom)
             } else {
-                Button(action: {
+                Button("Ekle") {
                     onAdd()
-                }) {
-                    Text("Ekle")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
                 }
-                .padding(.bottom)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(10)
             }
+
+            Button("İptal", role: .cancel) {
+                onDismiss()
+                print("Ekleye basıldı")
+            }
+            .foregroundColor(.gray)
         }
         .padding()
     }
