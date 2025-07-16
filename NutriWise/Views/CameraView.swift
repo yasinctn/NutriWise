@@ -58,7 +58,7 @@ struct CameraView: View {
             NutritionBottomSheet(
                 foodName: cameraVM.predictedLabel ?? "Bilinmeyen",
                 quantity: $cameraVM.quantity,
-                predictedInfo: cameraVM.nutritionInfo ?? NutritionInfo(foodName: "am", calories: 31, protein: 31, carbs: 31, fat: 31),
+                predictedInfo: cameraVM.nutritionInfo,
                 isLoading: cameraVM.isLoadingNutrition,
                 onAdd: {
                     print("📤 sendToBackend çağrılıyor")
@@ -72,11 +72,20 @@ struct CameraView: View {
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
-        .alert(cameraVM.errorMessage ?? "bir hata var", isPresented: $cameraVM.showAlertMessage) {
-            Button("Tamam") {
-                dismiss()
-            }
+        .alert(isPresented: $cameraVM.showAlertMessage) {
+            Alert(
+                title: Text(cameraVM.errorMessage != nil ? "Hata" : "Başarılı"),
+                message: Text(cameraVM.errorMessage ?? cameraVM.successMessage ?? "İşlem tamamlandı."),
+                dismissButton: .default(Text("Tamam")) {
+                    if cameraVM.errorMessage == nil {
+                        dismiss()
+                    } else {
+                        cameraVM.errorMessage = nil
+                    }
+                }
+            )
         }
+
         
         .onAppear {
             cameraVM.userId = userId

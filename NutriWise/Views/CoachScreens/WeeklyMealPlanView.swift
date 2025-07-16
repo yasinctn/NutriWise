@@ -8,27 +8,26 @@
 import SwiftUI
 
 struct WeeklyMealPlanView: View {
-    let weeklyPlan: WeeklyMealPlan
-
+    
+    @EnvironmentObject private var coachVM: CoachViewModel
+    @AppStorage("userId") var userId: Int = 0
+    
+    
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                Text("Weekly Meal Planner")
-                    .font(.title2).bold()
+            VStack(spacing: 24) {
+                Text("Haftalık Öğün Planı")
+                    .font(.largeTitle.bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
-
-                Text("Meal Plan for the Day")
-                    .font(.headline)
-                    .padding(.horizontal)
-
+                
                 ForEach(sortedGroupedMeals.keys.sorted(), id: \.self) { day in
                     VStack(alignment: .leading, spacing: 16) {
                         Text(formattedDate(from: day))
                             .font(.title3)
                             .bold()
                             .padding(.horizontal)
-
+                        
                         ForEach(sortedGroupedMeals[day] ?? [], id: \.mealType) { meal in
                             MealCard(meal: meal)
                                 .padding(.horizontal)
@@ -36,18 +35,26 @@ struct WeeklyMealPlanView: View {
                     }
                 }
             }
+            .padding(.vertical)
         }
+        .onAppear {
+            Task {
+                await coachVM.loadCoachData(userId: userId)
+            }
+        }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
-
+    
     private var sortedGroupedMeals: [String: [PlannedMeal]] {
-        Dictionary(grouping: weeklyPlan.plannedMeals, by: { String($0.day.prefix(10)) })
+        Dictionary(grouping: coachVM.weeklyPlan?.plannedMeals ?? [], by: { String($0.day.prefix(10)) })
     }
-
+    
     private func formattedDate(from iso: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         if let date = formatter.date(from: iso) {
             formatter.dateStyle = .medium
+            formatter.locale = Locale(identifier: "tr_TR")
             return formatter.string(from: date)
         }
         return iso
@@ -56,29 +63,29 @@ struct WeeklyMealPlanView: View {
 
 struct MealCard: View {
     let meal: PlannedMeal
-
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             Text(mealTypeText(meal.mealType))
                 .font(.headline)
-                .padding(.bottom, 5)
-
-            // Görsel temsil (şimdilik sistem simgesiyle)
-            Image(systemName: "photo.on.rectangle")
+                .foregroundColor(.accentColor)
+            
+            Image(mealImageName(meal.mealType))
                 .resizable()
                 .scaledToFill()
                 .frame(height: 150)
                 .cornerRadius(10)
                 .clipped()
-
+            
             ForEach(meal.foods, id: \.name) { food in
                 VStack(alignment: .leading, spacing: 4) {
                     Text(food.name)
-                        .font(.subheadline).bold()
-
-                    HStack(spacing: 16) {
-                        foodStat(icon: "flame.fill", value: "\(Int(food.calories)) cal")
-                        foodStat(icon: "circle.fill", value: "\(Int(food.protein))g", color: .blue)
+                        .font(.subheadline.bold())
+                        .foregroundColor(.primary)
+                    
+                    HStack(spacing: 12) {
+                        foodStat(icon: "flame.fill", value: "\(Int(food.calories)) cal", color: .pink)
+                        foodStat(icon: "circle.grid.cross.fill", value: "\(Int(food.protein))g", color: .blue)
                         foodStat(icon: "bag.fill", value: "\(Int(food.carbs))g", color: .orange)
                         foodStat(icon: "drop.fill", value: "\(Int(food.fat))g", color: .red)
                     }
@@ -87,26 +94,60 @@ struct MealCard: View {
             }
         }
         .padding()
-        .background(Color(.systemPink).opacity(0.1))
-        .cornerRadius(12)
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemBackground)))
+        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
-
-    private func foodStat(icon: String, value: String, color: Color = .primary) -> some View {
+    
+    private func foodStat(icon: String, value: String, color: Color) -> some View {
         Label {
             Text(value)
         } icon: {
             Image(systemName: icon)
                 .foregroundColor(color)
         }
+        .foregroundColor(.primary)
     }
-
+    
     private func mealTypeText(_ type: Int) -> String {
         switch type {
         case 0: return "Kahvaltı"
         case 1: return "Öğle Yemeği"
         case 2: return "Akşam Yemeği"
         case 3: return "Atıştırmalık"
-        default: return "Unknown"
+        default: return "Bilinmeyen"
+        }
+    }
+    
+    private func mealImageName(_ type: Int) -> String {
+        switch type {
+        case 0: return "kahvaltı"
+        case 1: return "ogle"
+        case 2: return "akşam"
+        case 3: return "atıştırma"
+        default: return "Bilinmeyen"
         }
     }
 }
+
+
+private func foodStat(icon: String, value: String, color: Color) -> some View {
+    Label {
+        Text(value)
+    } icon: {
+        Image(systemName: icon)
+            .foregroundColor(color)
+    }
+    .foregroundColor(.primary)
+}
+
+private func mealTypeText(_ type: Int) -> String {
+    switch type {
+    case 0: return "kahvaltı"
+    case 1: return "ogle"
+    case 2: return "akşam"
+    case 3: return "atıştırma"
+    default: return "Bilinmeyen"
+    }
+}
+
+

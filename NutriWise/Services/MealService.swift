@@ -73,20 +73,19 @@ class MealService {
             quantity: quantity
         )
 
-        print("📤 Gönderilen veri: \(request)")
 
         AF.request(url, method: .post, parameters: request, encoder: JSONParameterEncoder.default)
             .validate()
             .responseDecodable(of: NutritionInfo.self) { response in
                 switch response.result {
                 case .success(let data):
-                    print("✅ Decode edilen veri: \(data)")
+                    print("Decode edilen veri: \(data)")
                     completion(.success(data))
                 case .failure(let error):
-                    print("❌ API Hatası: \(error.localizedDescription)")
+                    print("API Hatası: \(error.localizedDescription)")
                     if let data = response.data {
                         
-                        print("📨 Yanıt verisi: \(String(data: data, encoding: .utf8) ?? "decode edilemedi")")
+                        print("Yanıt verisi: \(String(data: data, encoding: .utf8) ?? "decode edilemedi")")
                     }
                     completion(.failure(error))
                 }

@@ -17,6 +17,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
 
     private var isConfigured = false
     
+    @Published var successMessage: String?
+
     @Published var isSendingToBackend = false
     @Published var showAlertMessage = false
     @Published var capturedImage: UIImage?
@@ -92,8 +94,20 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             DispatchQueue.main.async {
                 self.predictedLabel = label
                 self.confirmedFoodName = label
-                self.showNutritionPopup = true
-                //self.fetchNutritionInfo(userId: self.userId ?? 1, mealType: self.mealType ?? "", foodName: label, quantity: self.quantity)
+
+                // ✅ Besin değerlerini çek ve göster
+                self.fetchAllFoods { allFoods in
+                    DispatchQueue.main.async {
+                        if let match = allFoods.first(where: { $0.name.lowercased() == label.lowercased() }) {
+                            self.nutritionInfo = match
+                        } else {
+                            self.nutritionInfo = nil
+                            self.errorMessage = "Tahmin edilen '\(label)' adlı yiyecek veri tabanında bulunamadı."
+                        }
+
+                        self.showNutritionPopup = true
+                    }
+                }
             }
 
         } catch {
@@ -102,6 +116,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             }
         }
     }
+
 
     func fetchNutritionInfo(userId: Int, mealType: String, foodName: String, quantity: Int) {
         isLoadingNutrition = true
@@ -140,6 +155,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 self.isSendingToBackend = false
                 switch result {
                 case .success:
+                    self.successMessage = "Yemek başarıyla eklendi!"
                     self.showNutritionPopup = false
                     self.showAlertMessage = true
                 case .failure(let error):
@@ -148,5 +164,33 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             }
         }
     }
+    
+    func fetchAllFoods(completion: @escaping ([NutritionInfo]) -> Void) {
+        guard let url = URL(string: "https://nutrionapp.up.railway.app/api/Food") else {
+            print("❌ Geçersiz URL")
+            completion([])
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                completion([])
+                return
+            }
+
+            guard let data = data else {
+                completion([])
+                return
+            }
+
+            do {
+                let decoded = try JSONDecoder().decode([NutritionInfo].self, from: data)
+                completion(decoded)
+            } catch {
+                completion([])
+            }
+        }.resume()
+    }
+
 }
 

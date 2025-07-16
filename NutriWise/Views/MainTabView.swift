@@ -15,9 +15,14 @@ struct MainTabView: View {
                     Label("Ana Sayfa", systemImage: "house")
                 }
             
-            CoachView()
+            DailyRecommendationView()
                 .tabItem {
                     Label("Koç", systemImage: "figure.walk.circle")
+                }
+            
+            WeeklyMealPlanView()
+                .tabItem {
+                    Label("Plan", systemImage: "list.clipboard")
                 }
             
             ProfileView()

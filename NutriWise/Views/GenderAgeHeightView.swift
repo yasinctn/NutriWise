@@ -43,7 +43,9 @@ struct GenderAgeHeightView: View {
             NavigationLink("İleri") {
                 GoalSelectionView()
             }
+            Spacer()
             .disabled(userVM.gender.isEmpty || userVM.age.isEmpty || userVM.height.isEmpty)
+            .padding()
         }
         .padding()
         

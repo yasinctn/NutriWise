@@ -29,13 +29,13 @@ struct NutritionBottomSheet: View {
                 ProgressView("Besin bilgileri yükleniyor...")
             } else if let info = predictedInfo {
                 HStack(spacing: 24) {
-                    nutritionItem(title: "Kalori", value: "\(info.calories ?? 0) kcal")
-                    nutritionItem(title: "Protein", value: "\(info.protein ?? 0.0) g")
+                    nutritionItem(title: "🔥 Kalori", value: "\(info.calories) kcal")
+                    nutritionItem(title: "⚡️ Protein", value: "\(info.protein) g")
                 }
 
                 HStack(spacing: 24) {
-                    nutritionItem(title: "Karbonhidrat", value: "\(info.carbs ?? 0.0) g")
-                    nutritionItem(title: "Yağ", value: "\(info.fat ?? 0.0) g")
+                    nutritionItem(title: "🍞 Karbonhidrat", value: "\(info.carbs) g")
+                    nutritionItem(title: "💧 Yağ", value: "\(info.fat) g")
                 }
             } else {
                 Text("❗Besin bilgisi bulunamadı.")

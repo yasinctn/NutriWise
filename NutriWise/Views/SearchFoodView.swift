@@ -49,25 +49,29 @@ struct SearchFoodView: View {
                 await searchFood(query: newValue)
             }
         }
+        .onAppear {
+            Task {
+                await searchFood(query: query) // ilk yüklemede tüm yiyecekleri göster
+            }
+        }
     }
 
     func searchFood(query: String) async {
-        guard !query.isEmpty else {
-            searchResults = []
-            return
-        }
-
         isLoading = true
 
         let allLabels = mealVM.getAllFoodLabels()
-        let filtered = allLabels.filter { $0.localizedCaseInsensitiveContains(query) }
 
-        // Food adında sahte veri üret
+        let filtered: [String]
+        if query.isEmpty {
+            filtered = allLabels // tümünü göster
+        } else {
+            filtered = allLabels.filter { $0.localizedCaseInsensitiveContains(query) }
+        }
+
         searchResults = filtered.map {
-            Food(name: $0, calories: 100, protein: 95, fat: 95, carbs: 28, quantity: 1) // örnek sabit kalori
+            Food(name: $0, calories: 100, protein: 95, fat: 95, carbs: 28, quantity: 1)
         }
 
         isLoading = false
     }
 }
-

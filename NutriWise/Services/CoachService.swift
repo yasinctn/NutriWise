@@ -12,7 +12,7 @@ class CoachService {
     static let shared = CoachService()
     private let baseURL = "https://nutrionapp.up.railway.app"
 
-    // Günlük öneri verisi
+    
     func fetchDailyRecommendation(for userId: Int) async throws -> DailyRecommendation {
         let url = "\(baseURL)/api/Recommendation/\(userId)"
         let response = try await AF.request(url)
@@ -21,7 +21,7 @@ class CoachService {
         return response
     }
 
-    // Haftalık plan verisi
+    
     func fetchWeeklyMealPlan(for userId: Int) async throws -> WeeklyMealPlan {
         let url = "\(baseURL)/api/MealPlan/user/\(userId)/weekly-plan"
         let response = try await AF.request(url)

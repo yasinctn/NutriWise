@@ -14,6 +14,8 @@ struct NutriWiseApp: App {
     @StateObject private var mealVM = MealViewModel()
     @StateObject private var cameraVM = CameraViewModel()
     @StateObject private var coachVM = CoachViewModel()
+    @StateObject private var waterVM = WaterChallengeViewModel()
+    
     
     var body: some Scene {
         WindowGroup {
@@ -22,6 +24,8 @@ struct NutriWiseApp: App {
                 .environmentObject(mealVM)
                 .environmentObject(userVM)
                 .environmentObject(coachVM)
+                .environmentObject(waterVM)
+                
         }
     }
 }

@@ -51,7 +51,7 @@ struct MealCaptureScreen: View {
                     .background(Color(.systemBackground))
                     .transition(.opacity)
             case .myFoods:
-                MyFoodsView(mealType: mealType)
+                MyFoodsView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(.systemBackground))
                     .transition(.opacity)// Bu parametre eksikse ekleyebilirsin
